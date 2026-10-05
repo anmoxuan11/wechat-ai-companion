@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>微信 AI 陪聊 · 控制面板</title>
+<link rel="stylesheet" href="/assets/style.css?v=3.0">
+</head>
+<body>
+<div class="wrap">
+  <h1><span id="statusDot" class="dot stop"></span>微信 AI 陪聊 · 控制面板</h1>
+  <div class="sub">本地运行 · 地址 <span id="addr">http://127.0.0.1:8765</span> · 关掉本页面不影响机器人</div>
+
+  <nav class="nav-tabs">
+    <button class="nav-tab active" data-page="console">控制台</button>
+    <button class="nav-tab" data-page="insight">洞察</button>
+    <button class="nav-tab" data-page="brain">记忆库</button>
+    <button class="nav-tab" data-page="tune">调教</button>
+    <button class="nav-tab" data-page="advisor">参谋与提案</button>
+    <button class="nav-tab" data-page="memory">人设与记忆</button>
+  </nav>
+
+  <div class="tab-page" id="page-console">
+  <div class="cards">
+    <div class="card"><div class="k">运行状态</div><div class="v"><span id="runningBadge" class="badge b-stop">未运行</span></div></div>
+    <div class="card"><div class="k">自动回复</div><div class="v"><span id="pauseBadge" class="badge b-ok">进行中</span></div></div>
+    <div class="card"><div class="k">监听对象</div><div class="v" id="listenVal">—</div></div>
+    <div class="card"><div class="k">微信连接</div><div class="v"><span id="wechatBadge" class="badge b-warn">未知</span></div></div>
+    <div class="card"><div class="k">运行时长</div><div class="v" id="uptimeVal">—</div></div>
+    <div class="card"><div class="k">进程 PID</div><div class="v" id="pidVal">—</div></div>
+    <div class="card"><div class="k">内存占用</div><div class="v" style="font-size:14px;" id="memVal">—</div></div>
+  </div>
+
+  <div class="section-title">基础控制</div>
+  <div class="btns">
+    <button class="start" id="btnStart"><span class="ic">▶</span>开启</button>
+    <button class="stop" id="btnStop"><span class="ic">⏹</span>关闭</button>
+    <button class="resume" id="btnResume"><span class="ic">↩</span>继续</button>
+    <button class="pause" id="btnPause"><span class="ic">⏸</span>暂停</button>
+    <button id="btnRestart"><span class="ic">⟳</span>重启</button>
+  </div>
+  <div class="hint">暂停＝只听不回（你亲自上时可以接管）；关闭＝杀掉机器人进程。</div>
+  <div class="row" style="margin-top:12px;">
+    <button class="mini" id="btnSelfTest"><span class="ic">🧪</span>&nbsp;一键自检</button>
+    <span class="hint" style="margin-left:10px;">验证进程/心跳/控制文件/日志/微信是否真的正常，不再靠感觉</span>
+  </div>
+  <div class="card" id="selfTestBox" style="margin-top:8px;display:none;">
+    <div class="card-head"><span class="k">自检结果</span></div>
+    <div class="props" id="selfTestList"></div>
+  </div>
+
+  <div class="section-title">监听对象</div>
+  <div class="row">
+    <select id="listenSelect">
+      <option value="墨玄">墨玄（测试小号）</option>
+      <option value="伴侣示例">伴侣示例（对象）</option>
+    </select>
+    <button class="switch-btn" id="btnSwitch">切换并重启</button>
+  </div>
+  <div class="hint">切换监听对象会改写 config.json 并重启机器人，约需 5 秒。</div>
+
+  <div class="section-title">定时任务（早安晚安 / 定时暂停继续）</div>
+  <div class="row">
+    <input type="time" id="schedTime" value="08:00" class="chat-input" style="max-width:130px;">
+    <select id="schedAction" style="max-width:150px;">
+      <option value="message">发送消息</option>
+      <option value="pause">暂停自动回复</option>
+      <option value="resume">恢复自动回复</option>
+    </select>
+    <input type="text" id="schedText" class="chat-input" placeholder="消息内容，如：早安呀，今天也要加油" style="flex:1;min-width:160px;">
+    <button class="switch-btn" id="btnSchedAdd">添加</button>
+  </div>
+  <div class="sched-list" id="schedList" style="margin-top:10px;">加载中…</div>
+  <div class="hint">每天到点自动执行一次；消息发给当前监听对象；晚上设「暂停」防聊脱、早上「恢复」再上岗。</div>
+
+  <div class="section-title">实时日志</div>
+  <div class="logbox" id="logbox">加载中…</div>
+  </div>
+
+  <div class="tab-page" id="page-memory" style="display:none">
+  <div class="section-title">成长记忆</div>
+  <div class="row">
+    <button class="danger" id="btnClear"><span class="ic">🗑</span>清空记忆</button>
+  </div>
+  <div class="hint">清空每日对话日志与成长摘要（data/daily 与 data/memory.md），不可恢复。</div>
+
+  <div class="section-title">人设 & 记忆（改完点保存，立即生效）</div>
+  <div class="p2grid">
+    <div>
+      <div class="card">
+        <div class="card-head"><span class="k">人设卡 persona.md</span><button class="mini" id="btnSavePersona">保存</button></div>
+        <textarea class="editor" id="personaBox" spellcheck="false" placeholder="加载中…"></textarea>
+        <div class="stats-line" id="profileStats">—</div>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="card-head"><span class="k">成长记忆 memory.md</span><button class="mini" id="btnSaveMemory">保存</button></div>
+        <textarea class="editor" id="memoryBox" spellcheck="false" placeholder="加载中…"></textarea>
+        <div class="hint">跨天自动生成的摘要（最近 3 天），可手动增删改，立即生效。</div>
+      </div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:12px;">
+    <div class="card-head"><span class="k">关系背景档案 relationship.md（长期事实：异地/学业/家庭/约定）</span><button class="mini" id="btnSaveRel">保存</button></div>
+    <textarea class="editor" id="relBox" spellcheck="false" placeholder="加载中…" style="min-height:110px;"></textarea>
+    <div class="hint">这是 DeepSeek 平时不知道的静态背景（比如异地、都在备考、8.29 飞B城），每次回复都会带上。改完保存立即生效。</div>
+  </div>
+  <div class="row" style="margin-top:12px;">
+    <button class="mini" id="btnRefreshPreview"><span class="ic">↻</span>&nbsp;刷新预览</button>
+    <button class="mini" id="btnRefreshDaily"><span class="ic">↻</span>&nbsp;刷新今日记录</button>
+  </div>
+  <div class="card" style="margin-top:10px;">
+    <div class="card-head"><span class="k">系统提示词预览（每次回复实际发给 AI 的完整内容）</span></div>
+    <pre class="preview" id="promptPreview">加载中…</pre>
+  </div>
+  <div class="card" style="margin-top:10px;">
+    <div class="card-head"><span class="k">今日聊天记录（data/daily，本地全量）</span></div>
+    <pre class="preview" id="dailyBox">加载中…</pre>
+  </div>
+  </div>
+
+  <div class="tab-page" id="page-insight" style="display:none">
+  <div class="cards" id="insightCards">
+    <div class="card"><div class="k">今日回复</div><div class="v" id="iReply">—</div></div>
+    <div class="card"><div class="k">今日花费</div><div class="v" id="iCost">—</div></div>
+    <div class="card"><div class="k">护栏拦截</div><div class="v" id="iBlocked">—</div></div>
+    <div class="card"><div class="k">错误</div><div class="v" id="iErr">—</div></div>
+    <div class="card"><div class="k">累计消息</div><div class="v" id="iMsgs">—</div></div>
+    <div class="card"><div class="k">有记录天数</div><div class="v" id="iDays">—</div></div>
+  </div>
+
+  <div class="card" style="margin-top:12px;">
+    <div class="card-head"><span class="k">健康度评分</span>
+      <span id="healthScore" class="badge b-warn">—</span></div>
+    <div class="props" id="healthReasons">加载中…</div>
+  </div>
+
+  <div class="section-title">Token 与成本</div>
+  <div class="row" style="gap:14px;flex-wrap:wrap;">
+    <span class="hint">今日 <b id="costToday">—</b></span>
+    <span class="hint">近 30 天 <b id="costMonth">—</b></span>
+    <span class="hint">近 7 天调用 <b id="costCalls">—</b> 次</span>
+  </div>
+  <div class="costbars" id="costBars">加载中…</div>
+
+  <div class="section-title">事件时间线</div>
+  <div class="row" style="margin-bottom:8px;">
+    <select id="evKind" style="max-width:180px;"><option value="">全部事件类型</option></select>
+    <select id="evLevel" style="max-width:130px;">
+      <option value="">全部级别</option>
+      <option value="success">成功</option>
+      <option value="info">信息</option>
+      <option value="warn">警告</option>
+      <option value="error">错误</option>
+    </select>
+    <button class="mini" id="btnEvRefresh">刷新</button>
+    <span style="flex:1;"></span>
+    <button class="mini danger" id="btnEvClear">清空</button>
+  </div>
+  <div class="eventline" id="evList">加载中…</div>
+  </div>
+
+  <div class="tab-page" id="page-brain" style="display:none">
+  <div class="card">
+    <div class="card-head"><span class="k">记忆沉淀</span>
+      <span id="memPhase" class="badge b-warn">—</span></div>
+    <div class="row">
+      <button class="mini" id="btnMemRun1">沉淀最早一天</button>
+      <button class="mini" id="btnMemRunAll">全部补跑</button>
+      <span style="flex:1;"></span>
+      <span class="hint" id="memPending">待沉淀 — 天</span>
+    </div>
+    <div class="hint" id="memDetail">沉淀完成后摘要会写入 system prompt，AI 下次回复就能引用。</div>
+  </div>
+
+  <div class="section-title">今日/近日摘要</div>
+  <div class="props" id="daySummaryList">加载中…</div>
+
+  <div class="section-title">周记</div>
+  <div class="props" id="weekSummaryList">加载中…</div>
+
+  <div class="section-title">长期事实卡片 <span class="hint" id="factTotal"></span></div>
+  <div class="row" style="margin-bottom:8px;">
+    <select id="factCat" style="max-width:150px;"><option value="">全部类别</option>
+      <option value="life">生活</option><option value="work">学业工作</option>
+      <option value="pref">喜好厌恶</option><option value="health">身体</option>
+      <option value="relation">关系约定</option><option value="plan">计划日程</option>
+      <option value="other">其他</option></select>
+    <input type="text" id="factKey" class="chat-input" placeholder="类别（如 宠物）" style="max-width:120px;">
+    <input type="text" id="factVal" class="chat-input" placeholder="事实（如 她养了一只叫元宝的橘猫）" style="flex:1;min-width:180px;">
+    <button class="mini" id="btnFactAdd">手填一条</button>
+  </div>
+  <div class="props" id="factList">加载中…</div>
+  <div class="hint">高敏信息（卡号/身份证/验证码/密码）在沉淀时会被自动丢弃；这里也能手动删错的。</div>
+  </div>
+
+  <div class="tab-page" id="page-tune" style="display:none">
+  <div class="section-title">回复预演（干跑，不会发给对方）</div>
+  <div class="row">
+    <input type="text" id="pvInput" class="chat-input" placeholder="输入她可能说的话，比如：今天好累啊">
+    <button class="switch-btn" id="btnPreview">生成预览</button>
+  </div>
+  <div class="hint">当前人设 / 记忆 / 语气滑杆全部生效。生成后可以用和真人一样的内容审查跑一遍。</div>
+  <div class="card" id="pvResult" style="margin-top:10px;display:none;">
+    <div class="card-head"><span class="k">预览结果</span>
+      <span class="hint" id="pvMeta"></span></div>
+    <div class="bubblewrap" id="pvBubbles"></div>
+    <div class="hint" id="pvRaw"></div>
+    <div class="row" style="margin-top:8px;">
+      <button class="mini" id="pvUp">赞</button>
+      <button class="mini" id="pvDown">踩</button>
+      <span class="hint" id="pvRate"></span>
+    </div>
+  </div>
+
+  <div class="section-title">语气滑杆（不用写 md 也能调）</div>
+  <div class="dials" id="dialBox">加载中…</div>
+  <div class="row" style="margin-top:8px;">
+    <button class="mini" id="btnDialSave">保存语气</button>
+    <span class="hint" style="margin-left:8px;">保存后下一次回复立即生效。</span>
+  </div>
+
+  <div class="section-title">护栏（发送前的最后一道）</div>
+  <div class="card">
+    <div class="card-head"><span class="k">规则</span></div>
+    <div class="props">
+      <div class="prop"><label class="sw"><input type="checkbox" id="gdEnabled"> 启用护栏</label></div>
+      <div class="prop"><label class="sw"><input type="checkbox" id="gdStrict"> 严格模式（有问题就拦下，不光是提醒）</label></div>
+      <div class="prop">免打扰时段 <input type="text" id="gdQuiet" class="chat-input" style="max-width:120px;" placeholder="23:00-08:00">
+        <span class="hint">留空即不限；填 23:00-08:00 表示这段时间不主动发言</span></div>
+      <div class="prop">每小时上限 <input type="number" id="gdMaxH" class="chat-input" style="max-width:90px;" min="1" max="200"></div>
+      <div class="prop">冷场收手阈值 <input type="number" id="gdDry" class="chat-input" style="max-width:90px;" min="1" max="20">
+        <span class="hint">连续几次主动发言没人回应就不再打扰</span></div>
+      <div class="prop"><button class="mini" id="btnGdSave">保存护栏</button>
+        <span class="hint" id="gdQuietNow" style="margin-left:8px;"></span></div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:10px;">
+    <div class="card-head"><span class="k">拿一句话试试护栏</span></div>
+    <div class="row">
+      <input type="text" id="gdTest" class="chat-input" placeholder="我是人工智能助手，请问有什么可以帮您？">
+      <button class="mini" id="btnGdTest">测试</button>
+    </div>
+    <div class="hint" id="gdTestOut"></div>
+  </div>
+  </div>
+
+  <div class="tab-page" id="page-advisor" style="display:none">
+  <div class="section-title">AI 参谋 & 提案中心（自进化）</div>
+  <div class="row">
+    <button class="mini" id="btnSelfCheck"><span class="ic">🩺</span>&nbsp;立即体检</button>
+    <button class="mini" id="btnRefreshProps"><span class="ic">↻</span>&nbsp;刷新提案</button>
+  </div>
+  <div class="card" style="margin-top:10px;">
+    <div class="card-head"><span class="k">AI 参谋对话（它能看你的档案，主动问缺的信息、提建议）</span></div>
+    <div class="chatbox" id="chatbox">
+      <div class="chat-tip">参谋能看到关系档案/成长记忆/人设卡，但不会替你回复她。试试："帮我看看档案还缺什么" 或 "我该补充点什么让它更懂她"</div>
+    </div>
+    <div class="row" style="margin-top:8px;">
+      <input type="text" id="chatInput" class="chat-input" placeholder="和 AI 参谋说点什么…">
+      <button class="switch-btn" id="btnSend" style="padding:11px 20px;">发送</button>
+    </div>
+  </div>
+  <div class="card" style="margin-top:10px;">
+    <div class="card-head"><span class="k">提案中心（AI 的建议，你点头才写入档案）</span></div>
+    <div class="prop-tabs">
+      <button class="prop-tab active" data-tab="pending">待处理 <span class="cnt" id="pendingCount">0</span></button>
+      <button class="prop-tab" data-tab="done">已处理 <span class="cnt" id="doneCount">0</span></button>
+    </div>
+    <div class="props" id="propsList">加载中…</div>
+  </div>
+  </div>
+  <div class="foot">
+    <span id="verBadge">v3.0</span>
+    <span class="hint" style="margin-left:10px;">关掉本页面不影响机器人运行</span>
+    <span style="flex:1;"></span>
+    <button class="mini" id="btnShutdown"><span class="ic">⏻</span>&nbsp;退出面板</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="/assets/app.js?v=3.0"></script>
+<script src="/assets/extra.js?v=3.0"></script>
+</body>
+</html>

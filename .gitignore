@@ -1,0 +1,67 @@
+# ---------------- 隐私 / 绝不进版本库 ----------------
+# 本机真实配置（含监听对象名、人设、密钥占位）
+config.json
+config.json.bak
+*.bak
+bot_control.json
+bot.pid
+bot_heartbeat.json
+panel.lock
+.panel.lock
+tmp*.ps1
+
+# 全部运行时数据：聊天记录、记忆、SQLite、定时任务、人设卡
+data/*
+!data/.gitkeep
+!data/README.md
+!data/*.example.*
+*.db
+*.db-shm
+*.db-wal
+*.jsonl
+
+# 密钥 / 凭据
+.env
+.env.*
+*.key
+*.pem
+secret*
+data/ilink_token.json
+data/style_profile.json
+data/chat_history.json
+
+# 日志
+*.log
+logs/
+wechatauto_logs/
+bot_console.log
+
+# 备份 / 本地工具记忆 / 打包产物
+backups/
+.backup*/
+.workbuddy/
+dist/
+build/
+*.exe
+*.spec.bak
+
+# ---------------- Python ----------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.venv/
+venv/
+env/
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+
+# ---------------- 工具 / 系统 ----------------
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*~

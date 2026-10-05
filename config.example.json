@@ -1,0 +1,129 @@
+{
+  "_说明": "微信 AI 陪聊机器人配置。改完保存即可，无需改代码。",
+  "_安装依赖": "微信 4.1.9+: pip install git+https://github.com/fanyuantaier/wechatauto-replica.git；微信 4.0-4.1.8: pip install wxauto4（需 Python 3.9-3.12）；微信 3.9.x: pip install wxauto",
+  "backend": "auto",
+  "partner_name": "伴侣示例",
+  "my_name": "我",
+  "listen": [
+    "伴侣示例"
+  ],
+  "control_chat": "文件传输助手",
+  "ai": {
+    "_密钥说明": "2.0 起密钥不再落盘：优先读环境变量 DEEPSEEK_API_KEY（视觉：DEEPSEEK_VISION_KEY）。已迁移的密钥存在 Windows 用户环境变量里，这里留空即可；想临时覆盖也可以直接填。",
+    "api_base": "https://api.deepseek.com/v1",
+    "api_key": "",
+    "model": "deepseek-chat",
+    "temperature": 0.85,
+    "max_tokens": 2048,
+    "timeout": 60
+  },
+  "vision": {
+    "_说明": "多模态图片识别（DeepSeek 官方 vision 模型 deepseek-v4-flash-vision-exp，当前唯一官方 vision 模型；温度 0 去幻觉，最准）",
+    "api_base": "https://api.deepseek.com/v1",
+    "api_key": "",
+    "model": "deepseek-v4-flash-vision-exp",
+    "temperature": 0,
+    "timeout": 90
+  },
+  "style": {
+    "style_profile_path": "data/style_profile.json",
+    "fewshot_count": 30,
+    "max_context_messages": 40,
+    "session_timeout_minutes": 240,
+    "tone_dials_enabled": true,
+    "tone_dials": {
+      "温柔": 0.65,
+      "撩": 0.5,
+      "话痨": 0.4,
+      "调侃": 0.6,
+      "直球": 0.5
+    }
+  },
+  "safety": {
+    "cooldown_seconds": 20,
+    "daily_reply_limit": 200,
+    "pause_by_default": false,
+    "reply_groups": false,
+    "typing_delay_seconds": [
+      2,
+      6
+    ],
+    "settle_seconds": 3,
+    "_抢答抑制说明": "B6：她连发时最后两条间隔小于 typing_gap_seconds 秒，就认为她还在打字，额外多等 typing_extra_wait_seconds 秒再接话",
+    "typing_gap_seconds": 2.0,
+    "typing_extra_wait_seconds": 3.0
+  },
+  "media": {
+    "_说明": "B7：非文本消息的处置策略。reply=正常接话（AI 会看到 [表情包] 之类的占位）／log=只记日志不回复",
+    "sticker": "reply",
+    "voice": "reply",
+    "video": "reply",
+    "file": "reply",
+    "location": "reply",
+    "link": "reply",
+    "redpacket": "log",
+    "transfer": "log",
+    "recall": "log",
+    "card": "log",
+    "other": "log"
+  },
+  "backend_failover": {
+    "_说明": "E3：消息通道自动降级。连续失败 fail_threshold 次就切到 order 里的下一个；只自动降级、不自动升回（升回要真的把后端拉起来，那本身是一次干扰），想切回来在面板点按钮。",
+    "enabled": true,
+    "fail_threshold": 3,
+    "order": [
+      "wechatauto",
+      "wxauto",
+      "ilink"
+    ]
+  },
+  "panel": {
+    "_说明": "F1 面板访问：默认只绑 127.0.0.1，仅本机可看。allow_lan 改成 true 后局域网/手机也能访问，但必须先设 password，否则会拒绝并回落到本机。",
+    "allow_lan": false,
+    "host": "127.0.0.1",
+    "port": 8765,
+    "password": ""
+  },
+  "ilink": {
+    "base_url": "https://ilinkai.weixin.qq.com",
+    "token_file": "data/ilink_token.json",
+    "poll_timeout_ms": 30000
+  },
+  "memory": {
+    "_说明": "3.0 成长记忆：后台自动沉淀每日摘要与事实，不是主流程的副作用，暂停/重启都不会漏",
+    "_手动补跑": "python tools/backfill.py            # 补跑所有缺摘要的历史日期",
+    "enabled": true,
+    "start_delay_seconds": 20,
+    "daily_at": "03:30",
+    "max_days_per_run": 3,
+    "extract_facts": true,
+    "week_summary": true,
+    "gap_seconds": 3
+  },
+  "guard": {
+    "_说明": "3.0 发送护栏：内容审查（防暴露身份/客服腔/格式污染）+ 节奏控制（免打扰/限流/冷场收手）",
+    "enabled": true,
+    "strict": false,
+    "quiet_hours": [
+      [
+        23,
+        8
+      ]
+    ],
+    "max_per_hour": 30,
+    "dry_streak_limit": 3,
+    "reconnect_after_fail": 3
+  },
+  "proactive": {
+    "_说明": "3.0 主动发起：她长时间没找你时主动开口。想彻底关闭把 enabled 改 false",
+    "enabled": true,
+    "idle_hours": 6,
+    "check_minutes": 30,
+    "max_per_day": 1
+  },
+  "cost": {
+    "_说明": "3.0 成本统计：单位「元 / 百万 tokens」；未知模型按 deepseek-chat 档估算",
+    "daily_alert_yuan": 5.0,
+    "prices": {}
+  }
+}

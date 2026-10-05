@@ -1,0 +1,11 @@
+{
+  "jobs": [
+    {
+      "id": "example_morning",
+      "time": "08:00",
+      "action": "message",
+      "text": "早安（示例定时任务，改成你们的专属称呼）",
+      "enabled": false
+    }
+  ]
+}

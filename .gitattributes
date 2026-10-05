@@ -1,0 +1,13 @@
+# 默认按 UTF-8 + LF 处理，Windows 检出时自动转换
+* text=auto eol=lf
+*.py text eol=lf working-tree-encoding=UTF-8
+*.json text eol=lf working-tree-encoding=UTF-8
+*.md text eol=lf working-tree-encoding=UTF-8
+*.html text eol=lf working-tree-encoding=UTF-8
+*.js text eol=lf working-tree-encoding=UTF-8
+*.css text eol=lf working-tree-encoding=UTF-8
+*.bat text eol=crlf working-tree-encoding=UTF-8
+*.ps1 text eol=crlf working-tree-encoding=UTF-8
+*.exe binary
+*.bin binary
+*.db binary

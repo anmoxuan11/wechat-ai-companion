@@ -1,0 +1,18 @@
+# 微信 AI 陪聊 · 依赖清单
+#
+# 面板本身（ui_server.py / core / web）零第三方依赖，只吃标准库。
+# 只有「真正去聊微信」的后端才需要装下面的东西。
+
+# ---- 核心（必装其一，取决于你的微信版本）----
+# 微信 4.1.9+
+git+https://github.com/fanyuantaier/wechatauto-replica.git
+
+# 微信 4.0 ~ 4.1.8（需要 Python 3.9-3.12）
+# wxauto4>=1.0
+
+# 微信 3.9.x
+# wxauto>=3.9
+
+# ---- 可选 ----
+# PyInstaller>=6.0        # 只在打包 exe 时需要
+# pytest>=7.0             # 只在跑单元测试时需要
